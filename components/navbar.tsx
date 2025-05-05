@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ThemeSwitch } from './theme-switch';
 import {
-  Box, Building, Badge, Calendar, Handshake, HardHat, HelpingHand,
+  Box, Building, Badge, Calendar, Handshake, HardHat,Briefcase,FileBadge , HelpingHand,
   LogOut, Newspaper, Star, User, LayoutDashboard, Settings,
   Building2
 } from 'lucide-react';
@@ -117,7 +117,7 @@ const sidebarLinks = [
   { href: "/admin/schedules", icon: <Calendar size={18} />, text: "Schedules" },
   { href: "/admin/articles", icon: <Newspaper size={18} />, text: "Articles" },
   { href: "/admin/certificates", icon: <Badge size={18} />, text: "Certificates" },
-  { href: "/admin/careers", icon: <HardHat size={18} />, text: "Careers" },
+  { href: "/admin/careers", icon: <FileBadge  size={18} />, text: "Careers" },
   { href: "/admin/partners", icon: <Handshake size={18} />, text: "Partners" },
   { href: "/admin/testimonials", icon: <Star size={18} />, text: "Testimonials" },
   { href: "/admin/settings", icon: <Settings size={18} />, text: "Settings" }

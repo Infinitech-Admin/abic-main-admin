@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { SearchBar } from './search-bar';
 import { Pagination } from './pagination';
 import { DataTableProps, Column } from '@/app/utils/types';
 import { Button } from "@heroui/button";
-
 
 export function DataTable<T extends Record<string, any>>({
     data,
@@ -17,33 +16,33 @@ export function DataTable<T extends Record<string, any>>({
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
 
+    useEffect(() => {
+        setPage(1);
+    }, [searchTerm]);
+
     const filteredData = useMemo(() => {
+        if (!searchTerm.trim()) return data;
+
+        const lowerTerm = searchTerm.toLowerCase();
+
         return data.filter((item) =>
-            Object.entries(item).some(([key, value]) => {
+            Object.values(item).some((value) => {
                 if (value == null) return false;
-    
+
                 if (typeof value === 'object') {
-                    // Check nested object (e.g., user.name)
-                    return Object.values(value).some(
-                        (nestedValue) =>
-                            nestedValue &&
-                            nestedValue.toString().toLowerCase().includes(searchTerm.toLowerCase())
+                    return Object.values(value).some((nested) =>
+                        nested?.toString().toLowerCase().includes(lowerTerm)
                     );
                 }
-    
-                // Check if value is a date string like "28-March-2025"
-                if (typeof value === 'string' && value.match(/\d{2}-[A-Za-z]+-\d{4}/)) {
-                    const month = value.split('-')[1].toLowerCase();
-                    return month.includes(searchTerm.toLowerCase());
+
+                if (typeof value === 'string' && /\d{2}-[A-Za-z]+-\d{4}/.test(value)) {
+                    return value.toLowerCase().includes(lowerTerm);
                 }
-    
-                return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+                return value.toString().toLowerCase().includes(lowerTerm);
             })
         );
     }, [data, searchTerm]);
-    
-    
-   
 
     const paginatedData = useMemo(() => {
         const start = (page - 1) * itemsPerPage;
@@ -67,7 +66,7 @@ export function DataTable<T extends Record<string, any>>({
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white dark:bg-[#18181b] border border-gray-200 dark:border-gray-700 rounded-lg">
                     <thead>
-                        <tr >
+                        <tr>
                             {columns.map((column) => (
                                 <th
                                     key={column.key as string}
@@ -116,8 +115,8 @@ export function DataTable<T extends Record<string, any>>({
                                                 ${column.key === 'type' && item.type === 'Events' ? 'bg-purple-200 text-purple-700 ' : ''}
                                                 ${column.key === 'type' && item.type === 'Meetings' ? 'bg-red-200 text-red-700 ' : ''}
                                                 ${column.key === 'type' && item.type === 'Admin' ? 'bg-red-200 text-red-700 ' : ''}
-                                                  ${column.key === 'type' && item.type === 'Agent' ? 'bg-green-200 text-green-700 ' : ''}
-                                                `}>
+                                                ${column.key === 'type' && item.type === 'Agent' ? 'bg-green-200 text-green-700 ' : ''}
+                                            `}>
                                                 {renderCell(item, column.key, column)}
                                             </div>
                                         </td>
@@ -125,13 +124,13 @@ export function DataTable<T extends Record<string, any>>({
                                     {onAction && (
                                         <td className="px-4 border-b">
                                             <div className="flex space-x-2">
-                                                <Button
+                                            {/* <Button
                                                     color="primary"
                                                     onClick={() => onAction(item)}
                                                     size="sm"
                                                 >
                                                     Edit
-                                                </Button>
+                                                </Button> */}
                                                 <Button
                                                     color="danger"
                                                     onClick={() => onDelete && onDelete(item)}
@@ -151,6 +150,6 @@ export function DataTable<T extends Record<string, any>>({
             <div className="mt-4">
                 <Pagination total={totalPages} page={page} onChange={setPage} />
             </div>
-        </div >
+        </div>
     );
 }
